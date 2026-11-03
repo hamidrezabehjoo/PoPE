@@ -1,0 +1,9 @@
+labels w=3.0 seed=135262344: 4000 paths, M=100, 0.2s, terminal logW sd=0.937
+stage1 seed=0 logmse step=1 val=3.0548
+stage1 seed=0 logmse step=200 val=1.7014
+SELECT w=3.0 seed=0 logmse: C=-1.85616 +/- 0.0718
+stage1 seed=0 huber step=1 val=3.5404
+stage1 seed=0 huber step=200 val=3.2142
+SELECT w=3.0 seed=0 huber: C=-1.77861 +/- 0.0653
+stage2 seed=0 update=1 C=-1.987 +/- 0.0291
+stage2 seed=0 update=2 C=-1.9911 +/- 0.0284

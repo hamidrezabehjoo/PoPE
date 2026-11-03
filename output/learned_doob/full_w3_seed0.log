@@ -1,0 +1,40 @@
+labels w=3.0 seed=135262344: 60000 paths, M=600, 11.0s, terminal logW sd=0.922
+stage1 seed=0 logmse step=1 val=2.9475
+stage1 seed=0 logmse step=250 val=1.4776
+stage1 seed=0 logmse step=500 val=1.4037
+stage1 seed=0 logmse step=750 val=1.3674
+stage1 seed=0 logmse step=1000 val=1.3615
+stage1 seed=0 logmse step=1250 val=1.3747
+stage1 seed=0 logmse step=1500 val=1.3423
+stage1 seed=0 logmse step=1750 val=1.3606
+stage1 seed=0 logmse step=2000 val=1.3393
+stage1 seed=0 logmse step=2250 val=1.3396
+stage1 seed=0 logmse step=2500 val=1.3548
+stage1 seed=0 logmse step=2750 val=1.3429
+stage1 seed=0 logmse step=3000 val=1.3284
+stage1 seed=0 logmse step=3250 val=1.3348
+stage1 seed=0 logmse step=3500 val=1.3574
+stage1 seed=0 logmse step=3750 val=1.3476
+stage1 seed=0 logmse step=4000 val=1.3472
+stage1 seed=0 logmse step=4250 val=1.3323
+stage1 seed=0 logmse step=4500 val=1.3362
+SELECT w=3.0 seed=0 logmse: C=-2.26269 +/- 0.0361
+stage1 seed=0 huber step=1 val=2.2176
+stage1 seed=0 huber step=250 val=1.9372
+stage1 seed=0 huber step=500 val=1.9235
+stage1 seed=0 huber step=750 val=1.9171
+stage1 seed=0 huber step=1000 val=1.9126
+stage1 seed=0 huber step=1250 val=1.9262
+stage1 seed=0 huber step=1500 val=1.9279
+stage1 seed=0 huber step=1750 val=1.9141
+stage1 seed=0 huber step=2000 val=1.9152
+stage1 seed=0 huber step=2250 val=1.9164
+stage1 seed=0 huber step=2500 val=1.9166
+SELECT w=3.0 seed=0 huber: C=-2.12402 +/- 0.03
+stage2 seed=0 update=1 C=-2.2214 +/- 0.0372
+stage2 seed=0 update=10 C=-2.1929 +/- 0.035
+stage2 seed=0 update=20 C=-2.2198 +/- 0.0375
+stage2 seed=0 update=30 C=-2.1969 +/- 0.0353
+stage2 seed=0 update=40 C=-2.3278 +/- 0.0379
+stage2 seed=0 update=50 C=-2.2986 +/- 0.0384
+stage2 seed=0 update=60 C=-2.3208 +/- 0.0372

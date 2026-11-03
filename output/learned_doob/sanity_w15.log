@@ -1,0 +1,46 @@
+labels w=1.5 seed=1466986193: 60000 paths, M=600, 11.4s, terminal logW sd=0.425
+w=1.5 moment gate: PSIS k=-0.3428, scaling=[{'N': 2000, 'ess': 0.6261557936668396}, {'N': 5000, 'ess': 0.6565837860107422}, {'N': 10000, 'ess': 0.6341277956962585}, {'N': 20000, 'ess': 0.5890594124794006}, {'N': 40000, 'ess': 0.5665668249130249}, {'N': 60000, 'ess': 0.5114619731903076}], pass=True
+stage1 seed=0 mse step=1 val=0.42053
+stage1 seed=0 mse step=250 val=0.37055
+stage1 seed=0 mse step=500 val=0.38381
+stage1 seed=0 mse step=750 val=0.35272
+stage1 seed=0 mse step=1000 val=0.34745
+stage1 seed=0 mse step=1250 val=0.35225
+stage1 seed=0 mse step=1500 val=0.35103
+stage1 seed=0 mse step=1750 val=0.35518
+stage1 seed=0 mse step=2000 val=0.34931
+stage1 seed=0 mse step=2250 val=0.34525
+stage1 seed=0 mse step=2500 val=0.35057
+stage1 seed=0 mse step=2750 val=0.34927
+stage1 seed=0 mse step=3000 val=0.34723
+stage1 seed=0 mse step=3250 val=0.34695
+stage1 seed=0 mse step=3500 val=0.35397
+stage1 seed=0 mse step=3750 val=0.3509
+/mnt/agents/output/when-diffusion-composition-fails/code/learned_doob.py:536: RuntimeWarning: overflow encountered in square
+  control_rmse=float(np.sqrt(np.mean(uerr**2))),
+/mnt/agents/output/when-diffusion-composition-fails/code/learned_doob.py:537: RuntimeWarning: overflow encountered in square
+  control_relative_rmse=float(np.sqrt(np.mean(uerr**2)) /
+/mnt/agents/output/when-diffusion-composition-fails/code/learned_doob.py:538: RuntimeWarning: overflow encountered in square
+  (np.sqrt(np.mean(u_star**2)) + 1e-12))))
+/mnt/agents/output/when-diffusion-composition-fails/code/learned_doob.py:537: RuntimeWarning: invalid value encountered in scalar divide
+  control_relative_rmse=float(np.sqrt(np.mean(uerr**2)) /
+stage1 seed=0 mse step=1 val=0.42053
+stage1 seed=0 mse step=250 val=0.37055
+stage1 seed=0 mse step=500 val=0.38381
+stage1 seed=0 mse step=750 val=0.35272
+stage1 seed=0 mse step=1000 val=0.34744
+stage1 seed=0 mse step=1250 val=0.35225
+stage1 seed=0 mse step=1500 val=0.35103
+stage1 seed=0 mse step=1750 val=0.35518
+stage1 seed=0 mse step=2000 val=0.34931
+stage1 seed=0 mse step=2250 val=0.34525
+stage1 seed=0 mse step=2500 val=0.35057
+stage1 seed=0 mse step=2750 val=0.34927
+stage1 seed=0 mse step=3000 val=0.34723
+stage1 seed=0 mse step=3250 val=0.34695
+stage1 seed=0 mse step=3500 val=0.35397
+stage1 seed=0 mse step=3750 val=0.3509
+MSE ESS 0.8666200391648483 MMD2 0.00014716782680301854 SW1 0.015198899702612326 TV 0.11793016297513151
+MSE + gradient penalty ESS 0.8666187906149422 MMD2 0.00014717992987067774 SW1 0.015198949544822524 TV 0.11801602870907031
+terminal IS ESS 0.5586869804237582 MMD2 0.0001183450656274676 SW1 0.017125151959540633 TV 0.14017810096888755
+adaptive SMC ESS 0.6094735868213631 MMD2 0.00021565912875942672 SW1 0.017280072728820706 TV 0.13557975624043278

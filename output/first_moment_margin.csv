@@ -1,0 +1,9 @@
+w,lambda_test,M,finite_mean_axis,finite_variance_axis,lambda_star_greater_than_1
+1.25,1.01,300,True,True,True
+1.5,1.01,300,True,True,True
+2.0,1.01,300,True,True,True
+3.0,1.01,300,True,True,True
+5.0,1.01,300,True,True,True
+10.0,1.01,300,True,True,True
+20.0,1.01,300,False,False,False
+50.0,1.01,300,False,False,False

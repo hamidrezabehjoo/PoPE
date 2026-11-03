@@ -1,0 +1,14 @@
+step 500->458
+step 458->417
+step 417->375
+step 375->333
+step 333->292
+step 292->250
+step 250->208
+step 208->167
+step 167->125
+step 125-> 83
+step  83-> 42
+step  42->  0
+{'w': np.float64(1.5), 'N': 192, 'steps': 12, 'disagreement_mean': 1.4329487085342407, 'disagreement_sd': 0.776109516620636, 'disagreement_cv': 0.5416170954704285, 'disagreement_per_pixel': 0.0018277406925335526, 'log_weight_sd': 0.2910410463809967, 'ess': 0.8325271606445312, 'psis_k': 0.5140205949704921}
+{'w': np.float64(2.0), 'N': 192, 'steps': 12, 'disagreement_mean': 1.1219524145126343, 'disagreement_sd': 0.5462022423744202, 'disagreement_cv': 0.4868319034576416, 'disagreement_per_pixel': 0.001431061769835651, 'log_weight_sd': 0.5462022423744202, 'ess': 0.19077527523040771, 'psis_k': 0.8789808085076151}

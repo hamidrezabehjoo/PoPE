@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Full figure driver for the 2D test beds (Section 4.4 of the paper).
+Full figure driver for the 2D test beds (Section 6.4 of the paper).
 
 Reproduces, into ../output/:
   gmm2d_degeneracy.{png,pdf}   ESS/N and E[W] vs guidance weight w

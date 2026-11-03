@@ -1,0 +1,67 @@
+{
+  "ess_ratio": 4.5185625936248766,
+  "ess_pass": true,
+  "target_reductions": {
+    "mmd2": 0.3847810030025206,
+    "sliced_w1": 0.48795546342270535,
+    "tv": 0.41429821100263753
+  },
+  "target_pass": true,
+  "per_seed": [
+    {
+      "seed": 0,
+      "ess_ratio": 6.660767008566335,
+      "mmd2_reduction": 0.6993402754818336,
+      "sliced_w1_reduction": 0.48132663591864056,
+      "tv_reduction": 0.4191835721209506
+    },
+    {
+      "seed": 1,
+      "ess_ratio": 1.4421298446482844,
+      "mmd2_reduction": 0.7359476225746073,
+      "sliced_w1_reduction": 0.5035383887849942,
+      "tv_reduction": 0.33173045691169856
+    },
+    {
+      "seed": 2,
+      "ess_ratio": 20.626495141106474,
+      "mmd2_reduction": -0.1352354363728281,
+      "sliced_w1_reduction": 0.48152093505306504,
+      "tv_reduction": 0.475270038978549
+    }
+  ],
+  "leave_one_seed_out": [
+    {
+      "omitted_seed": 0,
+      "ess_ratio": 3.8343051924392557,
+      "reductions": {
+        "mmd2": 0.3180271632901106,
+        "sliced_w1": 0.48977822190400877,
+        "tv": 0.4117202786614478
+      }
+    },
+    {
+      "omitted_seed": 1,
+      "ess_ratio": 10.58195094966531,
+      "reductions": {
+        "mmd2": 0.12072769760252144,
+        "sliced_w1": 0.4814615674751036,
+        "tv": 0.4479914126746556
+      }
+    },
+    {
+      "omitted_seed": 2,
+      "ess_ratio": 2.8373679284765485,
+      "reductions": {
+        "mmd2": 0.7253420124694031,
+        "sliced_w1": 0.49414209860029323,
+        "tv": 0.37928489729504056
+      }
+    }
+  ],
+  "mean_weight_ratio": 0.995920013576324,
+  "psis_k_mean": 1.9562888343499498,
+  "raw_second_ratio_mean": 12.52097811671112,
+  "core_pass": true,
+  "note": "Core statistical gates only; refinement, bias, SMC cost, and frozen stress are assessed separately."
+}

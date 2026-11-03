@@ -2,7 +2,7 @@
 """
 Core module for the 2D test beds of
 "When Diffusion Composition Fails: Exact Products of Path Measures"
-(Behjoo & Chertkov) -- Section 4.4 (non-Gaussian GMM test bed), using the
+(Behjoo & Chertkov) -- Section 6.4 (non-Gaussian GMM test bed), using the
 SMC scheme of the CFG/degeneracy sections.
 
 Setup (paper conventions): forward SDE f=0, g=1 on [0,1]; reference expert p0
@@ -19,7 +19,7 @@ Two beds, matched means/covariances, differing only in multimodality:
             pc = 1/4 sum N((0.8+-0.4, +-0.4), 0.09 I2) (mean (0.8,0), var/axis 0.25)
 
 Changelog vs the original development script (gmm2d_experiment.py):
-  * docstring: "Section 6.4" corrected to Section 4.4;
+  * docstring: section pointer updated to Section 6.4 (paper reordered);
   * salted hash() seeds replaced by deterministic stable_seed() (CRC32);
   * the "if N >= 100_000: break" early exit (which silently skipped the
     N = 3e5 scaling point) removed -- the loop lives in gmm2d_figures.py.
@@ -157,16 +157,19 @@ def smc_cfg(bed, w, N=60_000, M=2000, seed=0, snapshots=(0.75, 0.5, 0.25)):
 
 
 # ================= exact Gaussian MGF (discrete reverse-Euler path) ============
-def gaussian_path_mgf(v0, vc, mu, w, lam, M=500):
+def gaussian_path_mgf(v0, vc, mu, w, lam, M=500, t_min=0.0):
     """E[exp(lam * w(w-1)/2 * sum_i (A_i X_i - D_i)^2 dt)] for the discrete
     reverse-Euler path under b~ with X_0 ~ tempered noise end. Infinite when
     I - 2 lam th * |A|sqrt(dt) C |A|sqrt(dt) is not positive definite
-    (Cameron-Martin threshold).
+    (Cameron-Martin threshold). The path action runs from t=1 to ``t_min``;
+    positive ``t_min`` therefore gives the early-stopping calculation.
 
     Returns (value, is_finite). Per axis; the 2D Gaussian bed factorizes into
     the mean axis (mu=0.8) and the variance axis (mu=0.0).
     """
-    dt = 1.0 / M
+    if not 0.0 <= t_min < 1.0:
+        raise ValueError("t_min must satisfy 0 <= t_min < 1")
+    dt = (1.0 - t_min) / M
     ts = 1.0 - np.arange(M + 1) * dt
     v0t, vct = v0 + ts, vc + ts
     A = 1.0 / vct - 1.0 / v0t

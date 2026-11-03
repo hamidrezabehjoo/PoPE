@@ -1,0 +1,28 @@
+SMC Gaussian terminal IS: ESS=0.02392, MMD2=0.00132671, SW1=0.0367206, time=1.24s, resamples=0
+SMC Gaussian adaptive SMC: ESS=0.6242, MMD2=3.86126e-05, SW1=0.0110692, time=1.37s, resamples=2
+SMC Gaussian exact Doob: ESS=1, MMD2=8.91735e-05, SW1=0.0102957, time=5.50s, resamples=0
+SMC Gaussian approx Doob IS: ESS=0.8415, MMD2=0.000176845, SW1=0.014877, time=6.94s, resamples=0
+SMC GMM terminal IS: ESS=0.001417, MMD2=0.0694763, SW1=0.230679, time=2.47s, resamples=0
+SMC GMM adaptive SMC: ESS=0.9529, MMD2=0.000322451, SW1=0.0174024, time=2.61s, resamples=4
+SMC GMM exact Doob: ESS=1, MMD2=9.03131e-05, SW1=0.0107672, time=4.98s, resamples=0
+SMC GMM approx Doob IS: ESS=0.7482, MMD2=0.000339413, SW1=0.0172788, time=7.65s, resamples=0
+INIT Gaussian terminal IS p_1^{beta,S} corrected=True: ESS=0.02946, MMD2=0.000659029, SW1=0.0296333
+INIT Gaussian terminal IS N(0,I) corrected=True: ESS=0.03648, MMD2=0.00472696, SW1=0.0708412
+INIT Gaussian terminal IS N(0,I) corrected=False: ESS=0.003467, MMD2=0.0532509, SW1=0.195597
+INIT Gaussian exact Doob q_1 corrected=True: ESS=1, MMD2=0.000674356, SW1=0.0205688
+INIT Gaussian exact Doob N(0,I) corrected=True: ESS=0.4402, MMD2=0.0012205, SW1=0.0286753
+INIT Gaussian exact Doob N(0,I) corrected=False: ESS=1, MMD2=0.00548823, SW1=0.0557906
+INIT GMM terminal IS p_1^{beta,S} corrected=True: ESS=0.01996, MMD2=0.0167602, SW1=0.122497
+INIT GMM terminal IS N(0,I) corrected=True: ESS=0.0002678, MMD2=0.00420125, SW1=0.0622775
+INIT GMM terminal IS N(0,I) corrected=False: ESS=0.0009928, MMD2=0.00617205, SW1=0.0831759
+INIT GMM exact Doob q_1 corrected=True: ESS=1, MMD2=0.000336515, SW1=0.0165582
+INIT GMM exact Doob N(0,I) corrected=True: ESS=0.47, MMD2=0.000376318, SW1=0.0181897
+INIT GMM exact Doob N(0,I) corrected=False: ESS=1, MMD2=0.00988765, SW1=0.0776435
+VP T=1 q_T: data-end Gaussian KL=4.35834e-08
+VP T=1 N(0,1): data-end Gaussian KL=0.00893599
+VP T=2 q_T: data-end Gaussian KL=7.22292e-08
+VP T=2 N(0,1): data-end Gaussian KL=0.000631902
+VP T=5 q_T: data-end Gaussian KL=1.27773e-07
+VP T=5 N(0,1): data-end Gaussian KL=8.22685e-07
+VP T=10 q_T: data-end Gaussian KL=1.76903e-07
+VP T=10 N(0,1): data-end Gaussian KL=1.75441e-07

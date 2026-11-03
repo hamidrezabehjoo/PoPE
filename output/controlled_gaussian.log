@@ -1,0 +1,50 @@
+=== Two-expert Gaussian: exact uniform-weight Doob control ===
+sample N(1.13105,0.42435); exact N(1.13018,0.42604); ESS/N=1
+
+=== Gaussian CFG: exact Doob control below and above w* ===
+w=1.5: mean 0.830338 (exact 0.830769), var 0.173746 (exact 0.173077), ESS/N=1.000
+w=2.0: mean 0.846474 (exact 0.847059), var 0.134655 (exact 0.132353), ESS/N=1.000
+w=3.0: mean 0.863895 (exact 0.864000), var 0.089357 (exact 0.090000), ESS/N=1.000
+w=5.0: mean 0.877052 (exact 0.878049), var 0.055070 (exact 0.054878), ESS/N=1.000
+
+=== Approximate-control IS (method C), rho=0.8 ===
+w=2.0: mean 0.84796, var 0.13255, ESS/N=0.9865, sd(log W)=0.1026
+w=3.0: mean 0.86447, var 0.09036, ESS/N=0.9362, sd(log W)=0.2014
+
+=== Long-horizon VP noise-end approach to N(0,1), w=3 ===
+T= 1.0: alpha=5.916e-01, KL(geometric||N)=4.377e-01, KL(q_1||N)=1.631e-01
+T= 2.0: alpha=3.499e-01, KL(geometric||N)=2.176e-01, KL(q_1||N)=4.906e-02
+T= 5.0: alpha=7.244e-02, KL(geometric||N)=1.465e-02, KL(q_1||N)=1.964e-03
+T=10.0: alpha=5.248e-03, KL(geometric||N)=7.929e-05, KL(q_1||N)=1.028e-05
+
+=== Early-stopping critical scales (lambda*=2, M=300) ===
+vc=0.25, t_min=0: w*=1.9541 (axes 1.9541, 1.9541)
+vc=0.25, t_min=0.001: w*=1.9561 (axes 1.9561, 1.9561)
+vc=0.25, t_min=0.01: w*=1.9775 (axes 1.9775, 1.9775)
+vc=0.25, t_min=0.05: w*=2.0713 (axes 2.0713, 2.0713)
+vc=0.25, t_min=0.1: w*=2.1963 (axes 2.1963, 2.1963)
+vc=0.05, t_min=0: w*=1.5010 (axes 1.5010, 1.5010)
+vc=0.05, t_min=0.001: w*=1.5029 (axes 1.5029, 1.5029)
+vc=0.05, t_min=0.01: w*=1.5264 (axes 1.5264, 1.5264)
+vc=0.05, t_min=0.05: w*=1.6240 (axes 1.6240, 1.6240)
+vc=0.05, t_min=0.1: w*=1.7373 (axes 1.7373, 1.7373)
+vc=0.01, t_min=0: w*=1.3643 (axes 1.3643, 1.3643)
+vc=0.01, t_min=0.001: w*=1.3701 (axes 1.3701, 1.3701)
+vc=0.01, t_min=0.01: w*=1.4092 (axes 1.4092, 1.4092)
+vc=0.01, t_min=0.05: w*=1.5264 (axes 1.5264, 1.5264)
+vc=0.01, t_min=0.1: w*=1.6475 (axes 1.6475, 1.6475)
+vc=0.001, t_min=0: w*=1.2783 (axes 1.2783, 1.2783)
+vc=0.001, t_min=0.001: w*=1.2998 (axes 1.2998, 1.2998)
+vc=0.001, t_min=0.01: w*=1.3701 (axes 1.3701, 1.3701)
+vc=0.001, t_min=0.05: w*=1.5029 (axes 1.5029, 1.5029)
+vc=0.001, t_min=0.1: w*=1.6279 (axes 1.6279, 1.6279)
+
+=== Check lambda*>1 away from the endpoint ===
+w= 1.25: E[W^1.01] finite = True
+w=  1.5: E[W^1.01] finite = True
+w=  2.0: E[W^1.01] finite = True
+w=  3.0: E[W^1.01] finite = True
+w=  5.0: E[W^1.01] finite = True
+w= 10.0: E[W^1.01] finite = True
+w= 20.0: E[W^1.01] finite = False
+w= 50.0: E[W^1.01] finite = False
