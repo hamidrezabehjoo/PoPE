@@ -31,6 +31,7 @@ from gmm2d import (FINE, FXY, GAUSS_BED, GMM_BED, Zratio_grid,
 
 OUTDIR = os.path.join(os.path.dirname(__file__), "..", "output")
 C_G, C_M, C_EX = '#2166ac', '#b2182b', '#4393c3'
+GMM_WSTAR_LO, GMM_WSTAR_HI = 1.82, 1.85  # deterministic FK domain bracket
 
 
 def main():
@@ -130,11 +131,11 @@ def main():
     ax.semilogy(WS, essM, 's', color=C_M, ms=6, mfc='white', mew=1.6,
                 label=f'GMM SMC ($N{{=}}{NS:.0e}$)')
     ax.axvline(1.9539, color=C_G, ls=':', lw=1.4)
-    ax.axvline(1.55, color=C_M, ls=':', lw=1.4)
+    ax.axvspan(GMM_WSTAR_LO, GMM_WSTAR_HI, color=C_M, alpha=.10, lw=0)
     ax.text(1.9539, 1.6, ' $w^*$ Gaussian $=1.95$', color=C_G, fontsize=8.5,
             ha='left', va='top', rotation=90)
-    ax.text(1.55, 1.6, ' $w^*$ GMM $\\approx1.55$', color=C_M, fontsize=8.5,
-            ha='right', va='top', rotation=90)
+    ax.text(GMM_WSTAR_LO, 1.6, ' $w^*$ GMM $\\in(1.82,1.85)$', color=C_M,
+            fontsize=8.5, ha='right', va='top', rotation=90)
     ax.set_xlabel('guidance weight $w$')
     ax.set_ylabel('terminal ESS/$N$')
     ax.set_ylim(1e-3, 2.2); ax.set_xlim(0.4, 3.1)
@@ -168,7 +169,7 @@ def main():
                    'GMM $w{=}1.5$ (below $w^*$)'),
              1.6: ('#b2182b', [(30e3, nscale.get((30000, 1.6))),
                                (100e3, nscale.get((100000, 1.6)))],
-                   'GMM $w{=}1.6$ (above $w^*$)'),
+                   'GMM $w{=}1.6$ (below $w^*$; heavy-tailed ESS)'),
              1.7: ('#e08214', [(30e3, nscale.get((30000, 1.7))),
                                (100e3, nscale.get((100000, 1.7)))],
                    'GMM $w{=}1.7$'),
@@ -205,7 +206,7 @@ def main():
     ax.set_ylabel('TV to exact tempered target')
     ax.set_ylim(0, 0.30); ax.legend(fontsize=7.8, loc='upper left')
     ax.axvline(1.9539, color=C_G, ls=':', lw=1.2)
-    ax.axvline(1.55, color=C_M, ls=':', lw=1.2)
+    ax.axvspan(GMM_WSTAR_LO, GMM_WSTAR_HI, color=C_M, alpha=.10, lw=0)
     ax.set_title('(b) Exactness: corrected sampler hits the target, naive drifts',
                  fontsize=9.5)
     fig.tight_layout()

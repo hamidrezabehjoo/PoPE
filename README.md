@@ -61,7 +61,11 @@ code/
   lambda_star.py        moment/Pareto index lambda*(w) and the exact ESS table
   noise_level.py        nu-expert theorem: SMC check of the data-end laws
   renyi_debruijn.py     Renyi--de Bruijn identity: numeric check (VE and OU)
-  gmm2d_figures.py      full figure driver (degeneracy / scaling+TV / densities)
+  gmm2d_figures.py      full Monte Carlo figure driver (degeneracy / scaling+TV / densities)
+  gmm2d_paper_figures.py rebuilds summary figures from the reported author-run table
+  paper_style.py        shared semantic colors and final-size publication typography
+  publication_figures.py canonical driver for all main-paper figures
+  gmm2d_exact_moments.py deterministic log-Feynman--Kac moment/domain solver
   gmm2d_table_seeds.py  GMM table with mean +/- s.d. over seeds
   gmm2d_scaling.py      finite-N scaling data (plateau vs collapse)
   controlled_gaussian.py exact/approximate Gaussian Doob control, early stopping,
@@ -91,6 +95,10 @@ output/learned_doob/    learned checkpoints, raw metrics, summaries, and logs
 | \(\nu\)-expert data-end laws (N(1.649,0.231) … N(1.252,0.395)) | `noise_level.py` | `python noise_level.py` | ~3 min |
 | Rényi–de Bruijn identity (corollary) | `renyi_debruijn.py` | `python renyi_debruijn.py` | < 5 s |
 | `gmm2d_degeneracy.pdf`, `gmm2d_scaling_tv.pdf`, `gmm2d_densities.pdf`, sweep CSV | `gmm2d_figures.py` | `python gmm2d_figures.py` | ~50 min |
+| Paper-summary GMM figures without new MC runs | `gmm2d_paper_figures.py` | `python gmm2d_paper_figures.py --outdir ../output --gmm-lo 1.82 --gmm-hi 1.85` | ~1 min |
+| All main-paper figures with the shared publication style | `publication_figures.py` | `python publication_figures.py` (or `--only gaussian,early,ess,dimension,gmm,densities`) | ~10 min |
+| Deterministic GMM moments and domain-refinement brackets | `gmm2d_exact_moments.py` | `python gmm2d_exact_moments.py --bed gmm --w 1.5 --lam 2.8 --L 4 6 8 10` | ~2 min |
+| Lower-boundary spatial/time refinement | `gmm2d_exact_moments.py` | `python gmm2d_exact_moments.py --bed gmm --w 1.82 --lam 2 --L 4 6 8 10 --dx 0.075` | ~10 min |
 | GMM table (mean ± s.d. over 8 seeds) | `gmm2d_table_seeds.py` | `python gmm2d_table_seeds.py` | ~30 min |
 | Finite-\(N\) scaling data (plateau vs collapse) | `gmm2d_scaling.py` | `python gmm2d_scaling.py` | ~2 h |
 | Exact/approximate Gaussian control, VP horizon, early stopping | `controlled_gaussian.py` | `python controlled_gaussian.py` | ~20 min |
@@ -114,14 +122,15 @@ pretrained pilot instead exposes `--N`, `--steps`, and `--w` directly.
 * **Deterministic seeds.** All drivers use `stable_seed(...)` (CRC32); the
   original development code used Python's salted `hash()`, which changes
   between processes.
-* **Heavy tails near the threshold.** On the GMM bed the terminal ESS/N is
-  seed-stable well below \(w^*_{\rm GMM}\approx 1.55\) (e.g. \(0.793\pm0.001\)
-  at \(w=0.5\)) but becomes heavy-tailed near and above it: at \(w=1.5\) one
-  seed in eight collapses (median 0.552, full range [0.004, 0.578] at
+* **Heavy tails before the second-moment threshold.** The deterministic
+  Feynman–Kac/domain calculation brackets \(w^*_{\rm GMM}\) in \((1.82,1.85)\)
+  and \(\lambda^*(1.5)\) in \((2.8,2.9)\). Thus the GMM terminal ESS/N can be
+  heavy-tailed while weight variance is still finite: at \(w=1.5\) one seed in
+  eight collapses (median 0.552, full range [0.004, 0.578] at
   \(N=6\times10^4\)); at \(w=1.75\) individual collapsed draws below 0.03
-  appear by \(N=10^5\) while \(\mathbb E W\) remains accurate. This is the
-  \(\lambda^*\in(2,4)\) regime of the paper — always report mean ± s.d. over
-  seeds, never single-seed ESS values.
+  appear by \(N=10^5\) while \(\mathbb E W\) remains accurate. Finite-\(N\) ESS
+  regression must not be used to locate \(w^*\); always report mean ± s.d. over
+  seeds, never single-seed ESS values as stable point estimates.
 * **Original SMC checks.** These use exact tempered noise-end initialization
   (one importance-resampling step) and left-endpoint path weights, with no
   intermediate resampling. The separately reported adaptive-SMC baseline is

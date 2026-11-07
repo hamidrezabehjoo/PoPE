@@ -77,9 +77,15 @@ def naive_law_and_certificate(n_steps=400_000):
     return m, P, I1, I2
 
 
-def smc_example1(N=60_000, M=2000, seed=0):
+def smc_example1(N=60_000, M=2000, seed=0, return_samples=False,
+                 ess_times=None):
     """SMC verification: naive composed sampler + FK path weights (killing,
-    S = 1). Init from the exact p^{beta,S}_1. No resampling."""
+    S = 1). Init from the exact p^{beta,S}_1. No resampling.
+
+    Optional outputs support the publication figures without changing the
+    simulation: ``return_samples`` returns the terminal cloud and weights, and
+    ``ess_times`` records normalized ESS at the requested noising times.
+    """
     rng = np.random.default_rng(seed)
     dt = 1.0 / M
     h1, P1 = mixture_mom(1.0)
@@ -87,6 +93,11 @@ def smc_example1(N=60_000, M=2000, seed=0):
     logW = np.zeros(N)
     snaps = {}
     snap_set = {int(round((1 - t) / dt)): t for t in (0.75, 0.5, 0.25)}
+    ess_snap = {1.0: 1.0}
+    ess_snap_set = {} if ess_times is None else {
+        int(round((1 - float(t)) / dt)): float(t)
+        for t in ess_times if float(t) < 1.0
+    }
     for i in range(M):
         t = 1.0 - i * dt
         sc1 = -(x - MU1) / v1(t)            # scores s_k = grad log p^(k)_t
@@ -96,14 +107,22 @@ def smc_example1(N=60_000, M=2000, seed=0):
         x = x - b * dt + np.sqrt(dt) * rng.standard_normal(N)
         if i + 1 in snap_set:
             snaps[snap_set[i + 1]] = float(np.exp(logsumexp(logW) - np.log(N)))
+        if i + 1 in ess_snap_set:
+            lwi = logW - logsumexp(logW)
+            ess_snap[ess_snap_set[i + 1]] = float(
+                np.exp(-logsumexp(2 * lwi))) / N
     lwT = logW - logsumexp(logW)
     wn = np.exp(lwT)
     wmean = float(wn @ x)
     wvar = float(wn @ (x - wmean) ** 2)
     ess = float(np.exp(-logsumexp(2 * lwT))) / N
     EW = float(np.exp(logsumexp(logW) - np.log(N)))
-    return dict(umean=float(x.mean()), uvar=float(x.var()),
-                wmean=wmean, wvar=wvar, ess=ess, EW=EW, snaps=snaps)
+    result = dict(umean=float(x.mean()), uvar=float(x.var()),
+                  wmean=wmean, wvar=wvar, ess=ess, EW=EW, snaps=snaps,
+                  ess_snap=ess_snap)
+    if return_samples:
+        result.update(x0=x.copy(), logW=logW.copy(), wn=wn.copy())
+    return result
 
 
 def main():

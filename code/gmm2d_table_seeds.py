@@ -2,9 +2,11 @@
 """
 GMM table with seed statistics (Table tab:gmm2d of the paper, revised form).
 
-The terminal ESS/N of the GMM bed is heavy-tailed near and above the
-critical scale w*_GMM ~ 1.55 (the lambda* in (2,4) regime), so single-seed
-values are meaningless: this driver reports mean +/- s.d., median and range
+The terminal ESS/N of the GMM bed is heavy-tailed before the deterministic
+second-moment bracket w*_GMM in (1.82,1.85): at w=1.5 the moment index is
+between 2.8 and 2.9, so weight variance is finite but ESS-estimator variance is
+infinite. Single-seed values are therefore unstable: this driver reports mean
++/- s.d., median and range
 over seeds, alongside E[W] against the quadrature value of Z_0/Z_1.
 
 Default settings reproduce the revised table: N=6e4, M=2000; w = 0.5

@@ -1,0 +1,8 @@
+{'bed': 'gmm', 'w': 1.82, 'lam': 2.0, 'dx': 0.075, 'dt_scale': 0.25, 'logM': 13.326230862641815, 'hmax': 35.46674161272932, 'n': 107, 'L': 4.0, 'steps': 3902, 'status': 'finite', 't': 1.0}
+wrote /mnt/agents/output/when-diffusion-composition-fails/output/gmm2d_exact_moment_boundary_spatial_L4.csv
+{'bed': 'gmm', 'w': 1.82, 'lam': 2.0, 'dx': 0.075, 'dt_scale': 0.25, 'logM': 18.8553395890646, 'hmax': 66.7481083645103, 'n': 161, 'L': 6.0, 'steps': 3951, 'status': 'finite', 't': 1.0}
+wrote /mnt/agents/output/when-diffusion-composition-fails/output/gmm2d_exact_moment_boundary_spatial_L6.csv
+{'bed': 'gmm', 'w': 1.82, 'lam': 2.0, 'dx': 0.075, 'dt_scale': 0.25, 'logM': 23.482080507881943, 'hmax': 106.89105594127918, 'n': 213, 'L': 8.0, 'steps': 3902, 'status': 'finite', 't': 1.0}
+wrote /mnt/agents/output/when-diffusion-composition-fails/output/gmm2d_exact_moment_boundary_spatial_L8.csv
+{'bed': 'gmm', 'w': 1.82, 'lam': 2.0, 'dx': 0.075, 'dt_scale': 0.25, 'logM': 27.421728347413953, 'hmax': 156.09696236227282, 'n': 267, 'L': 10.0, 'steps': 3931, 'status': 'finite', 't': 1.0}
+wrote /mnt/agents/output/when-diffusion-composition-fails/output/gmm2d_exact_moment_boundary_spatial_L10.csv
