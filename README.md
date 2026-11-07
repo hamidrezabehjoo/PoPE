@@ -1,182 +1,133 @@
-# When Diffusion Composition Fails: Exact Composition through Path Measures
+# When Diffusion Composition Fails
 
-Code accompanying the paper
+Reproduction code for **“When Diffusion Composition Fails: Exact Composition through Path Measures”** by Hamidreza Behjoo and Misha Chertkov.
 
-> **When Diffusion Composition Fails: Exact Composition through Path Measures**
-> H. Behjoo and M. Chertkov
+This release contains only the final, no-learned-control numerical pipeline. It reproduces the six numerical figures and the associated Gaussian, Gaussian-mixture, resampling, initialization, and optional MNIST diagnostics. The roadmap and three-flow schematic are TikZ artwork in the manuscript and require no numerical code.
 
-The paper studies diffusion-model composition as an exact product of
-reverse-time *path measures*,
-\(Q \propto \prod_k \big(\mathrm{d}P^{(k)}_\leftarrow / \mathrm{d}P^{0}_\leftarrow\big)^{\beta_k}\,
-\mathrm{d}P^{0}_\leftarrow\), with the per-path Feynman–Kac weight driven by the
-*disagreement potential* \(\widetilde V^b\). This repository reproduces every
-numerical object in the paper: the Gaussian verification example, the weight
-degeneracy theory (including the moment/Pareto index \(\lambda^*\)), the
-noise-level (\(\nu\)-expert) theorem numerics, the Rényi–de Bruijn identity
-check, and the two-dimensional non-Gaussian (GMM) test bed. The second-stage
-numerics add exact and approximate Doob control, early-stopping and
-high-guidance moment-index calculations, long-horizon VP noise-end checks,
-grid/time refinements and replicates, and a small pretrained-MNIST CFG/PSIS
-diagnostic pilot. The theory-first revision adds a matched-budget adaptive-SMC
-baseline, three-seed controlled comparisons, standard-normal noise-end
-initialization with exact density-ratio corrections, and an affine VP
-calculation of the resulting data-end error. The learned-control follow-up adds
-three-seed \(w=3\) positive-value regression and direct-control policy-gradient
-fine-tuning, full approximate-Doob IS evaluation, time refinement, a \(w=1.5\)
-finite-moment sanity check, and frozen initialization/guidance stress tests.
+## Quick start
 
-## Conventions (enforced throughout the code and the paper)
-
-* Forward noising clock \(t: 0 \to 1\); reverse SDEs run on the **same clock**
-  \(t: 1 \to 0\). There is **no** \(\tau = 1 - t\) substitution anywhere.
-* Reverse drifts are written without a score symbol:
-  \(b^{(k)} = f^{(k)} - g_t^2\,\nabla \log p^{(k)}_t\).
-* Exponent sums are general, \(S = \sum_k \beta_k \neq 1\) allowed; CFG is the
-  reference-as-expert case \(\alpha_0 = 1 - w\), \(\alpha_c = w\).
-
-## Installation
+Python 3.10 or newer is recommended.
 
 ```bash
-python -m pip install -r requirements.txt   # numpy, scipy, matplotlib
-# Learned-control follow-up (PyTorch, pandas, xarray, ArviZ):
-python -m pip install -r requirements-learned.txt
+python -m pip install -r requirements.txt
+python reproduce.py figures
 ```
 
-The optional pretrained pilot additionally requires PyTorch and
-`arviz==0.22.0` (`python -m pip install -r requirements-pretrained.txt`). Clone <https://github.com/byrkbrk/diffusion-model> separately,
-use commit `8437d9e63cc07e4e518b6769bf85d3d9e0886aca`, and retain its
-`checkpoints/pretrained_mnist_checkpoint_49.pth`. Neither that repository nor
-its checkpoint is redistributed here.
+This writes both PDF and PNG versions to `figures/`:
 
-Python >= 3.10. All scripts are deterministic (CRC32-based seeds; no salted
-`hash()`), single-machine, and run on CPU (the pilot also accepts `--device`).
+- `gaussian_verification`
+- `early_stopping`
+- `ess_degeneracy`
+- `dimension_scaling`
+- `gmm2d_degeneracy`
+- `gmm2d_target_tv`
+- `gmm2d_densities`
 
-## Repository layout
+The command reads the canonical paper runs in `data/`; it does not rerun the expensive Monte Carlo experiments. Exact Gaussian curves are recomputed rather than stored as image data. To build a subset, use for example:
 
-```
-code/
-  gmm2d.py              core module: beds, scores, SMC, exact Gaussian path MGF,
-                        quadrature targets (imported by the drivers below)
-  example1_gaussian.py  Example 1: closed forms + SMC + KL certificate
-  lambda_star.py        moment/Pareto index lambda*(w) and the exact ESS table
-  noise_level.py        nu-expert theorem: SMC check of the data-end laws
-  renyi_debruijn.py     Renyi--de Bruijn identity: numeric check (VE and OU)
-  gmm2d_figures.py      full Monte Carlo figure driver (degeneracy / scaling+TV / densities)
-  gmm2d_paper_figures.py rebuilds summary figures from the reported author-run table
-  paper_style.py        shared semantic colors and final-size publication typography
-  publication_figures.py canonical driver for all main-paper figures
-  gmm2d_exact_moments.py deterministic log-Feynman--Kac moment/domain solver
-  gmm2d_table_seeds.py  GMM table with mean +/- s.d. over seeds
-  gmm2d_scaling.py      finite-N scaling data (plateau vs collapse)
-  controlled_gaussian.py exact/approximate Gaussian Doob control, early stopping,
-                        high-guidance moment indices, and long-horizon VP checks
-  controlled_gmm.py     FFT-grid Doob control, approximate control, MMD and sliced W1
-  control_refinement.py refined thresholds, grid/time refinement, and GMM replicates
-  controlled_figures.py second-stage manuscript figures from the CSV outputs
-  theory_control_checks.py adaptive-SMC baseline, shared-prior terminal IS/Doob,
-                        and exact affine VP data-end moment propagation
-  theory_control_replicates.py three-seed GMM summaries reported in the manuscript
-  pretrained_cfg.py     optional pretrained-MNIST disagreement/ESS/PSIS pilot
-  learned_doob.py       positive-value learning, direct-C fine-tuning, full-IS evaluation
-  run_w15_sanity.py     secondary finite-moment MSE sanity check
-  summarize_learned.py  three-seed summaries and pre-registered success gates
-  test_learned_doob.py  suffix-label, weight-sign, boundary, and policy-gradient tests
-  test_smoke.py         fast sanity tests (< 2 min)
-output/learned_doob/    learned checkpoints, raw metrics, summaries, and logs
+```bash
+python reproduce.py figures --only gaussian,ess,dimension
 ```
 
-## Reproduction map
+## Regenerate the numerical data
 
-| Paper object | Script | Command | Runtime |
-|---|---|---|---|
-| Example 1 (Gaussian verification figure/table) | `example1_gaussian.py` | `python example1_gaussian.py` | ~15 s |
-| KL certificate numbers (0.1155 ≤ 0.1521 = 0.7969 − 0.6449) | `example1_gaussian.py` | same as above | — |
-| \(\lambda^*(w)\) table (5.77 / 3.19 / 1.94 / 1.37 / 1.13) and exact ESS row | `lambda_star.py` | `python lambda_star.py` | ~5 min |
-| \(\nu\)-expert data-end laws (N(1.649,0.231) … N(1.252,0.395)) | `noise_level.py` | `python noise_level.py` | ~3 min |
-| Rényi–de Bruijn identity (corollary) | `renyi_debruijn.py` | `python renyi_debruijn.py` | < 5 s |
-| `gmm2d_degeneracy.pdf`, `gmm2d_scaling_tv.pdf`, `gmm2d_densities.pdf`, sweep CSV | `gmm2d_figures.py` | `python gmm2d_figures.py` | ~50 min |
-| Paper-summary GMM figures without new MC runs | `gmm2d_paper_figures.py` | `python gmm2d_paper_figures.py --outdir ../output --gmm-lo 1.82 --gmm-hi 1.85` | ~1 min |
-| All main-paper figures with the shared publication style | `publication_figures.py` | `python publication_figures.py` (or `--only gaussian,early,ess,dimension,gmm,densities`) | ~10 min |
-| Deterministic GMM moments and domain-refinement brackets | `gmm2d_exact_moments.py` | `python gmm2d_exact_moments.py --bed gmm --w 1.5 --lam 2.8 --L 4 6 8 10` | ~2 min |
-| Lower-boundary spatial/time refinement | `gmm2d_exact_moments.py` | `python gmm2d_exact_moments.py --bed gmm --w 1.82 --lam 2 --L 4 6 8 10 --dx 0.075` | ~10 min |
-| GMM table (mean ± s.d. over 8 seeds) | `gmm2d_table_seeds.py` | `python gmm2d_table_seeds.py` | ~30 min |
-| Finite-\(N\) scaling data (plateau vs collapse) | `gmm2d_scaling.py` | `python gmm2d_scaling.py` | ~2 h |
-| Exact/approximate Gaussian control, VP horizon, early stopping | `controlled_gaussian.py` | `python controlled_gaussian.py` | ~20 min |
-| Controlled two-dimensional Gaussian/GMM comparison | `controlled_gmm.py` | `python controlled_gmm.py` | ~30 min |
-| Refined moment thresholds and controlled-GMM robustness checks | `control_refinement.py` | `python control_refinement.py` | ~20 min |
-| Second-stage figures | `controlled_figures.py` | `python controlled_figures.py` | < 5 s |
-| SMC baseline and shared-prior/VP data-end checks | `theory_control_checks.py` | `python theory_control_checks.py` | ~3 min |
-| Three-seed SMC and shared-prior manuscript tables | `theory_control_replicates.py` | `python theory_control_replicates.py` | ~3 min |
-| Learned \(w=3\), one training seed | `learned_doob.py` | `python learned_doob.py run --w 3 --seed 0 --paths 60000 --train-steps 8000 --eval-N 20000 --M 600` | ~10 min |
-| Refine one frozen learned control | `learned_doob.py` | `python learned_doob.py refine output/learned_doob/control_w3_seed0_finetuned.pt --w 3 --seed 0` | ~8 min |
-| \(w=1.5\) sanity check | `run_w15_sanity.py` | `python run_w15_sanity.py --seed 0` | ~10 min |
-| Frozen prior/guidance stress | `learned_doob.py` | `python learned_doob.py stress output/learned_doob/control_w3_seed0_finetuned.pt --trained-w 3 --test-w 2 --seed 0` | ~5 min |
-| Aggregate learned runs | `summarize_learned.py` | `python summarize_learned.py` | < 5 s |
-| Pretrained CFG pilot | `pretrained_cfg.py` | `python pretrained_cfg.py --repo /path/to/diffusion-model --N 192 --steps 12 --w 1.5 2 3 5` | model-dependent |
+Each suite writes to `results/<suite>/` and never overwrites `data/`. Full settings are the default; `--quick` is only a small functional test and does not reproduce the paper’s numerical accuracy.
 
-The numerical drivers accept `--quick` for a small smoke-sized run. The
-pretrained pilot instead exposes `--N`, `--steps`, and `--w` directly.
+```bash
+# Gaussian terminal clouds, ESS trajectories, and CFG summary
+python reproduce.py simulate gaussian
 
-## Reproducibility notes
+# Early stopping, high-guidance margins, moment indices, and dimension thresholds
+python reproduce.py simulate thresholds
 
-* **Deterministic seeds.** All drivers use `stable_seed(...)` (CRC32); the
-  original development code used Python's salted `hash()`, which changes
-  between processes.
-* **Heavy tails before the second-moment threshold.** The deterministic
-  Feynman–Kac/domain calculation brackets \(w^*_{\rm GMM}\) in \((1.82,1.85)\)
-  and \(\lambda^*(1.5)\) in \((2.8,2.9)\). Thus the GMM terminal ESS/N can be
-  heavy-tailed while weight variance is still finite: at \(w=1.5\) one seed in
-  eight collapses (median 0.552, full range [0.004, 0.578] at
-  \(N=6\times10^4\)); at \(w=1.75\) individual collapsed draws below 0.03
-  appear by \(N=10^5\) while \(\mathbb E W\) remains accurate. Finite-\(N\) ESS
-  regression must not be used to locate \(w^*\); always report mean ± s.d. over
-  seeds, never single-seed ESS values as stable point estimates.
-* **Original SMC checks.** These use exact tempered noise-end initialization
-  (one importance-resampling step) and left-endpoint path weights, with no
-  intermediate resampling. The separately reported adaptive-SMC baseline is
-  described below.
-* **Controlled samplers.** Exact Doob runs have uniform weights by
-  construction. The approximate-control run uses \(\hat u=0.8u^*\); its path
-  weight includes the control Girsanov factor. At exact control, the discrete
-  path-weight standard deviation decreases under time refinement. The GMM
-  implementation uses periodic FFT convolution and spectral scores; reported
-  MMD values are fixed-size biased weighted statistics, not unbiased MMD
-  estimates or asymptotic moment criteria.
-* **Adaptive-SMC baseline.** The comparison uses the same naive proposal and
-  left-endpoint Feynman–Kac potential as terminal IS, with systematic
-  resampling when incremental ESS/N falls below 0.5. All methods have the
-  same particle and time-step budgets. SMC's reported ESS is for the final
-  incremental weights, not the full resampled genealogy. Wall times describe
-  only this implementation.
-* **Shared-prior checks.** Corrected terminal IS from \(N(0,I)\) includes
-  \(p_1^{\beta,S}/r_1\); corrected exact Doob includes \(q_1/r_1\). Runs
-  without these factors are intentionally uncorrected initialization-mismatch
-  diagnostics. The VP data-end errors are exact discrete affine moment
-  calculations, not Monte Carlo estimates.
-* **Learned-control scope.** Training uses only naive-path suffix weights and
-  exact component scores, never the exact grid Doob control. Stage 2 is a
-  randomized policy-gradient estimator with time subsampling and a
-  leave-one-out baseline, not full backpropagation through 600 transitions.
-  Frozen evaluation retains the full potential and Girsanov weight. The
-  two-dimensional results are a proof of concept, not a scalability claim;
-  high PSIS tail estimates preclude a finite-variance-restoration claim.
-* **Pretrained pilot limitations.** The reported pilot uses only 192
-  trajectories per guidance value and 12 ancestral posterior jumps on the
-  original 500-step schedule. It diagnoses score disagreement and weight
-  tails for that discrete procedure; it is not an image-quality benchmark,
-  an exact continuous-time validation, or a dimension-scaling study.
+# Gaussian/GMM sweep and full-terminal clouds for the density panels
+python reproduce.py simulate gmm
 
-## Citation
+# Deterministic bounded-domain GMM moment scans
+python reproduce.py simulate gmm-moments
 
-```bibtex
-@article{behjoo2026diffusion,
-  title   = {When Diffusion Composition Fails: Exact Composition through Path Measures},
-  author  = {Behjoo, H. and Chertkov, M.},
-  year    = {2026},
-  note    = {manuscript}
-}
+# Three-seed adaptive-SMC and shared-prior tables
+python reproduce.py simulate comparisons
 ```
 
-## License
+To plot regenerated data rather than the bundled paper runs:
 
-MIT (see `LICENSE`). Please replace the copyright line with the author names.
+```bash
+python reproduce.py figures \
+  --data-dir results/gmm \
+  --output-dir figures/regenerated-gmm \
+  --only gmm,densities
+```
+
+The full Monte Carlo suites are CPU-intensive. Run them independently and retain their output directories. No cluster-specific scheduler, absolute path, pretrained model, or network access is required by these five suites.
+
+For a custom deterministic moment scan, the solver also exposes its grid controls directly:
+
+```bash
+python -m pope.gmm_moments --bed gmm --w 1.82 --lam 2 \
+  --L 4 6 8 10 --dx 0.1 --dt-scale 0.25 \
+  --out results/custom-gmm-moments.csv
+```
+
+## Figure and table map
+
+| Manuscript object | Figure group or regeneration suite |
+|---|---|
+| Gaussian data-end laws and normalizer chain | `gaussian` / `simulate gaussian` |
+| Gaussian verification table | `simulate gaussian` |
+| Early stopping and first-moment margin | `early` / `simulate thresholds` |
+| ESS trajectories and terminal degeneracy | `ess` / `simulate gaussian` |
+| Gaussian moment-index table | `simulate thresholds` |
+| Dimension scaling | `dimension` / `simulate thresholds` |
+| GMM degeneracy and mean-weight panels | `gmm` / `simulate gmm` |
+| GMM target-TV panel | `gmm` / `simulate gmm` |
+| GMM density panels | `densities` / `simulate gmm` |
+| Deterministic GMM log-moment table | `simulate gmm-moments` |
+| Matched-budget terminal-IS/adaptive-SMC table | `simulate comparisons` |
+| Shared-prior initialization table | `simulate comparisons` |
+
+The finite-N scaling statements in the text use the same `pope.core.smc_cfg` implementation with the particle counts and stable seeds specified in the manuscript. They are not presented as asymptotic moment estimates.
+
+## Optional pretrained MNIST pilot
+
+The appendix pilot is optional and is not needed for any figure. It requires PyTorch, ArviZ 0.22.0, and a separate local clone of `byrkbrk/diffusion-model` at commit `8437d9e63cc07e4e518b6769bf85d3d9e0886aca`, including its `checkpoints/pretrained_mnist_checkpoint_49.pth` file. Neither third-party code nor the checkpoint is redistributed here.
+
+```bash
+python -m pip install -r requirements-mnist.txt
+python -m pope.mnist --repo /path/to/diffusion-model \
+  --N 192 --steps 12 --w 1.5 2 3 5
+```
+
+The pilot is a finite-sample diagnostic for that discrete procedure, not an exact continuous-time validation, an image-quality benchmark, or proof of a moment divergence.
+
+## Tests
+
+Run the release tests from the repository root:
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+For an additional end-to-end functional check with small simulations:
+
+```bash
+python reproduce.py simulate gaussian --quick --output-dir results/test-gaussian
+python reproduce.py figures --data-dir results/test-gaussian \
+  --output-dir figures/test-gaussian --only gaussian,ess
+```
+
+Quick runs are tested for execution and invariants, not agreement with full-run Monte Carlo values.
+
+## Conventions and reproducibility
+
+- One noising clock is used throughout: forward time runs from 0 to 1 and reverse simulation from 1 to 0. There is no auxiliary time reversal.
+- All random seeds are deterministic CRC32-based seeds, independent of Python’s salted `hash()`.
+- `data/` contains the canonical reported numerical inputs; `results/` and `figures/` are generated and ignored by version control.
+- Terminal IS uses exact tempered noise-end initialization unless a shared-prior experiment explicitly states otherwise. The standard-prior correction includes the required initial density ratio.
+- Adaptive SMC uses the same naive proposal and left-endpoint potential, with systematic resampling when incremental ESS/N falls below 0.5. Its reported ESS is for final incremental weights.
+- MMD is the fixed-unit-bandwidth biased weighted RBF statistic; sliced Wasserstein uses 64 fixed directions. These are finite-sample diagnostics.
+- Positive finite-N ESS values beyond a second-moment threshold are finite-population artifacts, not asymptotic ESS values.
+
+## Citation and license
+
+See `CITATION.cff`. The code is released under the MIT license in `LICENSE`.

@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+title: "When Diffusion Composition Fails: Exact Composition through Path Measures — reproduction code"
+message: "If you use this code, please cite the accompanying manuscript."
+type: software
+authors:
+  - family-names: Behjoo
+    given-names: Hamidreza
+  - family-names: Chertkov
+    given-names: Misha
+year: 2026
+license: MIT
+repository-code: https://github.com/hamidrezabehjoo/PoPE

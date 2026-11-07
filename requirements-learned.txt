@@ -1,5 +1,0 @@
--r requirements.txt
-torch>=2.0
-pandas>=2.2
-xarray>=2024.11
-arviz>=1.3
