@@ -10,7 +10,9 @@ import numpy as np
 
 from .core import (GAUSS_BED, GMM_BED, Zratio_grid, gaussian_path_mgf, smc_cfg,
                    stable_seed, tv_to_target)
-from .diagnostics import write_csv
+from .diagnostics import (ReferenceGrid, evaluate, smc_resampling_cfg, summarize,
+                          timed_call, write_csv)
+from .surrogate import controlled_cfg, tempered_grid
 from .gaussian import (DIMS, ETA, MU, V0, VC, critical_w, exact_ess_1d,
                        lambda_star_1d, smc_cfg_1d, smc_example1, var_logw_1d,
                        vp_noise_end, wstar_bed)
@@ -156,6 +158,101 @@ def run_gmm(output_dir, quick=False):
                          tv_naive=tv_n, tv_corrected=tv_w,
                          gmm_n_seeds=n_seeds, N=N, M=M))
         write_csv(output_dir / "gmm_summary.csv", rows)
+
+
+def run_accuracy(output_dir, quick=False):
+    """Matched-score-call target-accuracy comparison on the GMM bed at w=3.
+
+    Every method uses common seed labels, N particles, and M reverse steps. The
+    timer covers initialization and sampling only; reference-grid construction
+    and distributional evaluation are excluded. Score calls are counted at the
+    expert-score call sites in the samplers.
+    """
+    output_dir = Path(output_dir)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    N, M = (2000, 100) if quick else (20_000, 600)
+    n_seeds, grid_n, init_grid_n = (2, 96, 101) if quick else (8, 320, 701)
+    w = 3.0
+    grid = ReferenceGrid(GMM_BED, w, n=grid_n)
+    noise_grid = tempered_grid(GMM_BED, w, 1.0, n=init_grid_n)
+    diag_n = min(2000, N)
+    methods = ("terminal IS", "surrogate control", "adaptive SMC")
+    rows = []
+    for replicate in range(n_seeds):
+        for method in methods:
+            # The same integer seed is used for every method. Different proposal
+            # and initialization mechanisms need not consume identical streams.
+            seed = replicate
+
+            def run():
+                if method == "terminal IS":
+                    return controlled_cfg(GMM_BED, w, "naive", N=N, M=M,
+                                          seed=seed, noise_grid=noise_grid)
+                if method == "surrogate control":
+                    return controlled_cfg(GMM_BED, w, "ctrl_q1", N=N, M=M,
+                                          seed=seed, noise_grid=noise_grid)
+                return smc_resampling_cfg(GMM_BED, w, N=N, M=M, seed=seed)
+
+            result, seconds = timed_call(run)
+            wn = result["wn"]
+            if (not np.all(np.isfinite(wn)) or np.any(wn < 0)
+                    or not np.isclose(wn.sum(), 1.0, rtol=0.0, atol=1e-12)):
+                raise RuntimeError("Invalid normalized sampler weights")
+            if result["score_calls"] != 2 * N * M:
+                raise RuntimeError("Unexpected expert-score-call count")
+            metrics = evaluate(
+                result, grid, diag_n=diag_n,
+                diag_seed=stable_seed("matched-accuracy-diagnostic", replicate))
+            row = dict(replicate=replicate, seed=seed, method=method, w=w,
+                       N=N, M=M, grid=grid_n, init_grid=init_grid_n,
+                       seconds=seconds, score_calls=result["score_calls"],
+                       ess=result["ess"],
+                       n_resample=result.get("n_resample", 0), **metrics)
+            rows.append(row)
+            print(f"accuracy w=3, {method}, seed={seed}: "
+                  f"MMD2={metrics['mmd2']:.6g}, SW1={metrics['sliced_w1']:.6g}, "
+                  f"TV={metrics['tv']:.6g}, ESS/N={result['ess']:.6g}, "
+                  f"calls={result['score_calls']}, time={seconds:.3f}s",
+                  flush=True)
+            write_csv(output_dir / "matched_accuracy_replicates.csv", rows)
+
+    metric_keys = ["mmd2", "sliced_w1", "tv", "score_calls", "seconds",
+                   "ess", "n_resample"]
+    summary = summarize(rows, ["method"], metric_keys)
+    order = {method: i for i, method in enumerate(methods)}
+    summary.sort(key=lambda row: order[row["method"]])
+    write_csv(output_dir / "matched_accuracy.csv", summary)
+
+    def estimate(key, row):
+        return f"{row[key + '_mean']:.6g} +/- {row[key + '_sd']:.3g}"
+
+    table_rows = []
+    for row in summary:
+        table_rows.append([
+            row["method"], estimate("mmd2", row), estimate("sliced_w1", row),
+            estimate("tv", row), f"{row['score_calls_mean']:.0f}",
+            estimate("seconds", row), estimate("ess", row),
+        ])
+    headers = ["Method", "MMD^2", "sliced W1", "TV", "score calls",
+               "time [s]", "ESS/N"]
+    markdown = ["| " + " | ".join(headers) + " |",
+                "|" + "|".join(["---"] + ["---:"] * (len(headers) - 1)) + "|"]
+    markdown += ["| " + " | ".join(values) + " |" for values in table_rows]
+    markdown += ["", "Entries are mean +/- sample standard deviation over "
+                 f"{n_seeds} common seeds; N={N}, M={M}, w=3.", ""]
+    (output_dir / "matched_accuracy_table.md").write_text("\n".join(markdown))
+
+    latex = ["\\begin{tabular}{lrrrrrr}", "\\toprule",
+             "Method & MMD$^2$ & sliced $W_1$ & TV & score calls & time [s] & ESS/N \\\\",
+             "\\midrule"]
+    for values in table_rows:
+        escaped = [values[0]] + [
+            value.replace("+/-", "$\\pm$") if "+/-" in value else value
+            for value in values[1:]
+        ]
+        latex.append(" & ".join(escaped) + " \\\\")
+    latex += ["\\bottomrule", "\\end{tabular}", ""]
+    (output_dir / "matched_accuracy_table.tex").write_text("\n".join(latex))
 
 
 def run_gmm_moments(output_dir, quick=False):

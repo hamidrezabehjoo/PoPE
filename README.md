@@ -2,7 +2,7 @@
 
 Reproduction code for **“When Diffusion Composition Fails: Exact Composition through Path Measures”** by Hamidreza Behjoo and Misha Chertkov.
 
-This release reproduces the six numerical figures and the associated Gaussian, Gaussian-mixture, resampling, initialization, and optional MNIST diagnostics. The roadmap and three-flow schematic are TikZ artwork in the manuscript and require no numerical code.
+This release contains only the final numerical pipeline, including terminal IS, adaptive SMC, and training-free Gaussian-surrogate controlled residual IS; it contains no learned-control experiments. It reproduces the six numerical figures and the associated Gaussian, Gaussian-mixture, controlled-proposal, resampling, initialization, and optional MNIST diagnostics. The roadmap and three-flow schematic are TikZ artwork in the manuscript and require no numerical code.
 
 ## Quick start
 
@@ -48,6 +48,12 @@ python reproduce.py simulate gmm-moments
 
 # Three-seed adaptive-SMC and shared-prior tables
 python reproduce.py simulate comparisons
+
+# Gaussian-surrogate controlled residual-IS table and exact-Gaussian check
+python reproduce.py simulate surrogate
+
+# Eight-seed matched-score-call target-accuracy comparison at w=3
+python reproduce.py simulate accuracy
 ```
 
 To plot regenerated data rather than the bundled paper runs:
@@ -59,7 +65,7 @@ python reproduce.py figures \
   --only gmm,densities
 ```
 
-The full Monte Carlo suites are CPU-intensive. Run them independently and retain their output directories. No cluster-specific scheduler, absolute path, pretrained model, or network access is required by these five suites.
+The full Monte Carlo suites are CPU-intensive. Run them independently and retain their output directories. No cluster-specific scheduler, absolute path, pretrained model, or network access is required by these suites.
 
 For a custom deterministic moment scan, the solver also exposes its grid controls directly:
 
@@ -84,6 +90,9 @@ python -m pope.gmm_moments --bed gmm --w 1.82 --lam 2 \
 | GMM density panels | `densities` / `simulate gmm` |
 | Deterministic GMM log-moment table | `simulate gmm-moments` |
 | Matched-budget terminal-IS/adaptive-SMC table | `simulate comparisons` |
+| Gaussian-surrogate controlled residual-IS table | `simulate surrogate` |
+| Eight-seed target-accuracy and measured-cost comparison at `w=3` | `simulate accuracy` |
+| Exact-Gaussian surrogate implementation check | `simulate surrogate` |
 | Shared-prior initialization table | `simulate comparisons` |
 
 The finite-N scaling statements in the text use the same `pope.core.smc_cfg` implementation with the particle counts and stable seeds specified in the manuscript. They are not presented as asymptotic moment estimates.
@@ -114,6 +123,8 @@ For an additional end-to-end functional check with small simulations:
 python reproduce.py simulate gaussian --quick --output-dir results/test-gaussian
 python reproduce.py figures --data-dir results/test-gaussian \
   --output-dir figures/test-gaussian --only gaussian,ess
+python reproduce.py simulate surrogate --quick --output-dir results/test-surrogate
+python reproduce.py simulate accuracy --quick --output-dir results/test-accuracy
 ```
 
 Quick runs are tested for execution and invariants, not agreement with full-run Monte Carlo values.
@@ -125,7 +136,10 @@ Quick runs are tested for execution and invariants, not agreement with full-run 
 - `data/` contains the canonical reported numerical inputs; `results/` and `figures/` are generated and ignored by version control.
 - Terminal IS uses exact tempered noise-end initialization unless a shared-prior experiment explicitly states otherwise. The standard-prior correction includes the required initial density ratio.
 - Adaptive SMC uses the same naive proposal and left-endpoint potential, with systematic resampling when incremental ESS/N falls below 0.5. Its reported ESS is for final incremental weights.
-- MMD is the fixed-unit-bandwidth biased weighted RBF statistic; sliced Wasserstein uses 64 fixed directions. These are finite-sample diagnostics.
+- The surrogate suite uses `N=20000`, `M=600`, a 701-by-701 initialization grid on `[-7,7]^2`, and seeds 0, 1, 2. `ctrl_p1` retains exact tempered initialization; `ctrl_q1` uses the Gaussian-surrogate initialization and its initial residual ratio exactly once. There is no resampling. Its table reports the population standard deviation over the three seeds.
+- The surrogate suite alone is an ESS diagnostic and does not certify a finite controlled second moment.
+- The accuracy suite fixes `w=3`, `N=20000`, and `M=600`, and uses common seeds 0 through 7 for terminal IS, surrogate-controlled residual IS with `hat q_1` initialization, and adaptive SMC. It records actual expert-score-call counters and sampler-only wall time. Grid construction and metric evaluation are excluded from the timing.
+- MMD is the fixed-unit-bandwidth biased weighted RBF statistic; sliced Wasserstein uses 64 fixed directions. These are finite-sample diagnostics. Full-path terminal-IS or controlled-IS ESS is not directly comparable with SMC's final-increment ESS.
 - Positive finite-N ESS values beyond a second-moment threshold are finite-population artifacts, not asymptotic ESS values.
 
 ## Citation and license

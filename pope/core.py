@@ -114,12 +114,15 @@ def smc_cfg(bed, w, N=60_000, M=2000, seed=0, snapshots=(0.75, 0.5, 0.25)):
     lw = log_init - logsumexp(log_init)
     x = x[rng.choice(N, size=N, p=np.exp(lw))]                       # -> p^{(w)}_1
     logW = np.zeros(N)
+    score_calls = 0
     ess_snap = {}
     snap_set = {int(round((1 - t) / dt)): t for t in snapshots}
     for i in range(M):
         t = 1.0 - i * dt
         s0 = p0_score(x, bed, t)
+        score_calls += N
         sc = pc_score(x, bed, t)
+        score_calls += N
         if th != 0.0:
             d = sc - s0
             logW += th * np.einsum('nd,nd->n', d, d) * dt
@@ -132,7 +135,7 @@ def smc_cfg(bed, w, N=60_000, M=2000, seed=0, snapshots=(0.75, 0.5, 0.25)):
     return dict(x0=x, logW=logW, wn=np.exp(lwT),
                 ess=float(np.exp(-logsumexp(2 * lwT))) / N,
                 EW=float(np.exp(logW).mean()), sdlogW=float(np.std(logW)),
-                ess_snap=ess_snap)
+                ess_snap=ess_snap, score_calls=score_calls)
 
 
 # ================= exact Gaussian MGF (discrete reverse-Euler path) ============

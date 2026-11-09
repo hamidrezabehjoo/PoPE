@@ -19,6 +19,10 @@ a second hard-coded copy of the reported values.
 - `gmm_exact_moments.csv`: deterministic bounded-domain log-moment scans.
 - `smc_comparison.csv`, `shared_prior.csv`: three-seed summaries for the two
   initialization/resampling tables.
+- `surrogate_control.csv`, `surrogate_control_replicates.csv`: three-seed
+  Gaussian-surrogate controlled residual-IS ESS summaries and individual runs.
+  Standard deviations in this table use the population (`ddof=0`) convention.
+- `surrogate_gaussian_check.csv`: exact-Gaussian surrogate checks at seed 0.
 - `mnist_pilot.csv`: the optional 192-trajectory, 12-jump pretrained diagnostic.
 
 `python reproduce.py figures` reads these files and writes publication figures.

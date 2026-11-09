@@ -20,7 +20,8 @@ def main():
     simulate = subparsers.add_parser(
         "simulate", help="regenerate numerical data without overwriting data/")
     simulate.add_argument("suite", choices=("gaussian", "thresholds", "gmm",
-                                            "gmm-moments", "comparisons"))
+                                            "gmm-moments", "comparisons",
+                                            "surrogate", "accuracy"))
     simulate.add_argument("--quick", action="store_true",
                           help="small test settings; not the paper's numerical accuracy")
     simulate.add_argument("--output-dir", type=Path,
@@ -45,9 +46,15 @@ def main():
     elif args.suite == "gmm-moments":
         from pope.experiments import run_gmm_moments
         run_gmm_moments(output, quick=args.quick)
-    else:
+    elif args.suite == "comparisons":
         from pope.diagnostics import run_comparisons
         run_comparisons(output, quick=args.quick)
+    elif args.suite == "accuracy":
+        from pope.experiments import run_accuracy
+        run_accuracy(output, quick=args.quick)
+    else:
+        from pope.surrogate import run_surrogate
+        run_surrogate(output, quick=args.quick)
     print(f"Numerical data written to {output.resolve()}")
 
 

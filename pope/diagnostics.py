@@ -141,10 +141,14 @@ def smc_resampling_cfg(bed, w, N=20_000, M=600, seed=0, threshold=0.5):
                     - np.log(p0_pdf(x, bed, 1.0) + 1e-300))
     x, init_ess = systematic_resample(x, log_init, rng)
     logw = np.zeros(N)
+    score_calls = 0
     resample_times, pre_ess = [], []
     for i in range(M):
         t = 1.0 - i * dt
-        s0, sc = p0_score(x, bed, t), pc_score(x, bed, t)
+        s0 = p0_score(x, bed, t)
+        score_calls += N
+        sc = pc_score(x, bed, t)
+        score_calls += N
         difference = sc - s0
         logw += theta * np.einsum("nd,nd->n", difference, difference) * dt
         drift = -((1.0 - w) * s0 + w * sc)
@@ -161,7 +165,7 @@ def smc_resampling_cfg(bed, w, N=20_000, M=600, seed=0, threshold=0.5):
                 mean_weight=float(np.exp(logw).mean()),
                 n_resample=len(resample_times),
                 min_pre_resample_ess=float(min(pre_ess)) if pre_ess else 1.0,
-                initial_ess=init_ess)
+                initial_ess=init_ess, score_calls=score_calls)
 
 
 def terminal_standard_prior(grid, N=20_000, M=600, seed=0, corrected=True):
