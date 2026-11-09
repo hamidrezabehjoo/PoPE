@@ -2,7 +2,7 @@
 
 Reproduction code for **“When Diffusion Composition Fails: Exact Composition through Path Measures”** by Hamidreza Behjoo and Misha Chertkov.
 
-This release contains only the final numerical pipeline, including terminal IS, adaptive SMC, and training-free Gaussian-surrogate controlled residual IS; it contains no learned-control experiments. It reproduces the six numerical figures and the associated Gaussian, Gaussian-mixture, controlled-proposal, resampling, initialization, and optional MNIST diagnostics. The roadmap and three-flow schematic are TikZ artwork in the manuscript and require no numerical code.
+This release contains only the final numerical pipeline, including terminal IS, adaptive SMC, and training-free Gaussian-surrogate controlled residual IS. It reproduces the six numerical figures and the associated Gaussian, Gaussian-mixture, controlled-proposal, resampling, initialization, and optional MNIST diagnostics. 
 
 ## Quick start
 
